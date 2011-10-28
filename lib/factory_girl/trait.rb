@@ -14,9 +14,8 @@ module FactoryGirl
     delegate :declare_attribute, :to => :@attribute_list
 
     def attributes
-      AttributeList.new.tap do |list|
-        list.apply_attribute_list(@attribute_list)
-      end
+      @attribute_list.ensure_compiled
+      @attribute_list
     end
 
     def names

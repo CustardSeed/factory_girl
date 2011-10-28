@@ -31,8 +31,6 @@ module FactoryGirl
     end
 
     def apply_attribute_list(attributes_to_apply)
-      attributes_to_apply.ensure_compiled
-
       new_attributes = []
 
       attributes_to_apply.each do |attribute|
