@@ -2,13 +2,10 @@ module FactoryGirl
   class AttributeList
     include Enumerable
 
-    attr_reader :callbacks
-
     def initialize(name = nil)
       @name         = name
       @attributes   = {}
       @declarations = DeclarationList.new
-      @callbacks    = []
       @overridable  = false
       @compiled     = false
     end
@@ -25,10 +22,6 @@ module FactoryGirl
       add_attribute attribute
     end
 
-    def add_callback(callback)
-      @callbacks << callback
-    end
-
     def each(&block)
       flattened_attributes.each(&block)
     end
@@ -39,7 +32,6 @@ module FactoryGirl
 
     def apply_attribute_list(attributes_to_apply)
       attributes_to_apply.ensure_compiled
-      prepend_callbacks(attributes_to_apply.callbacks)
 
       new_attributes = []
 
@@ -85,10 +77,6 @@ module FactoryGirl
       @attributes[attribute.priority] ||= []
       @attributes[attribute.priority] << attribute
       attribute
-    end
-
-    def prepend_callbacks(callbacks)
-      @callbacks.unshift(*callbacks)
     end
 
     def prepend_attributes(new_attributes)

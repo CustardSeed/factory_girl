@@ -60,18 +60,6 @@ describe FactoryGirl::AttributeList, "#define_attribute with a named attribute l
   end
 end
 
-describe FactoryGirl::AttributeList, "#add_callback" do
-  let(:proxy_class) { mock("klass") }
-  let(:proxy) { FactoryGirl::Proxy.new(proxy_class) }
-
-  it "allows for defining adding a callback" do
-    subject.add_callback(FactoryGirl::Callback.new(:after_create, lambda { "Called after_create" }))
-
-    subject.callbacks.first.name.should == :after_create
-    subject.callbacks.first.run(nil, nil).should == "Called after_create"
-  end
-end
-
 describe FactoryGirl::AttributeList, "#apply_attribute_list" do
   let(:full_name_attribute) { FactoryGirl::Attribute::Static.new(:full_name, "John Adams", false) }
   let(:city_attribute)      { FactoryGirl::Attribute::Static.new(:city, "Boston", false) }

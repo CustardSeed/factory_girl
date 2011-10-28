@@ -15,13 +15,18 @@ module FactoryGirl
       @default_strategy = options[:default_strategy]
       @defined_traits   = []
       @attribute_list   = build_attribute_list
+      @callbacks = []
     end
 
-    delegate :overridable?, :declare_attribute, :add_callback, :to => :@attribute_list
+    delegate :overridable?, :declare_attribute, :to => :@attribute_list
 
     def factory_name
       $stderr.puts "DEPRECATION WARNING: factory.factory_name is deprecated; use factory.name instead."
       name
+    end
+
+    def add_callback(callback)
+      @callbacks << callback
     end
 
     def build_class #:nodoc:
@@ -129,11 +134,13 @@ module FactoryGirl
       end
     end
 
-    private
-
     def callbacks
-      attributes.callbacks
+      [@callbacks].tap do |result|
+        result.unshift(*parent.callbacks) if parent
+      end.flatten
     end
+
+    private
 
     def inherit_factory(parent) #:nodoc:
       parent.ensure_compiled

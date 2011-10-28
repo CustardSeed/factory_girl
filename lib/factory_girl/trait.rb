@@ -11,7 +11,7 @@ module FactoryGirl
       proxy.instance_eval(&@block) if block_given?
     end
 
-    delegate :declare_attribute, :add_callback, :to => :@attribute_list
+    delegate :declare_attribute, :to => :@attribute_list
 
     def attributes
       AttributeList.new.tap do |list|
