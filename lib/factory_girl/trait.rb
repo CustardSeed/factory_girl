@@ -15,7 +15,7 @@ module FactoryGirl
 
     def attributes
       AttributeList.new.tap do |list|
-        list.apply_attributes(@attribute_list)
+        list.apply_attribute_list(@attribute_list)
       end
     end
 

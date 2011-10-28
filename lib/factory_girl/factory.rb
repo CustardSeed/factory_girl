@@ -123,11 +123,11 @@ module FactoryGirl
       ensure_compiled
       build_attribute_list.tap do |list|
         @traits.reverse.map { |name| trait_by_name(name) }.each do |trait|
-          list.apply_attributes(trait.attributes)
+          list.apply_attribute_list(trait.attributes)
         end
 
-        list.apply_attributes(@attribute_list)
-        list.apply_attributes(parent.attributes) if parent
+        list.apply_attribute_list(@attribute_list)
+        list.apply_attribute_list(parent.attributes) if parent
       end
     end
 

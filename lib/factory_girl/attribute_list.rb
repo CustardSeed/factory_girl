@@ -37,7 +37,7 @@ module FactoryGirl
       compile unless @compiled
     end
 
-    def apply_attributes(attributes_to_apply)
+    def apply_attribute_list(attributes_to_apply)
       attributes_to_apply.ensure_compiled
       attributes_to_apply.callbacks.reverse.each { |callback| prepend_callback(callback) }
       new_attributes = []
