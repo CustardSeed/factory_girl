@@ -13,20 +13,14 @@ module FactoryGirl
       @traits           = options[:traits]  || []
       @class_name       = options[:class]
       @default_strategy = options[:default_strategy]
-      @defined_traits   = []
-      @attribute_list   = build_attribute_list
-      @callbacks = []
+      @definition       = Definition.new(@name)
     end
 
-    delegate :declare_attribute, :to => :@attribute_list
+    delegate :add_callback, :declare_attribute, :to_create, :define_trait, :to => :@definition
 
     def factory_name
       $stderr.puts "DEPRECATION WARNING: factory.factory_name is deprecated; use factory.name instead."
       name
-    end
-
-    def add_callback(callback)
-      @callbacks << callback
     end
 
     def build_class #:nodoc:
@@ -38,19 +32,15 @@ module FactoryGirl
     end
 
     def allow_overrides
-      @attribute_list.overridable
+      attribute_list.overridable
       self
-    end
-
-    def define_trait(trait)
-      @defined_traits << trait
     end
 
     def run(proxy_class, overrides, &block) #:nodoc:
       runner_options = {
         :attributes  => attributes,
         :callbacks   => callbacks,
-        :to_create   => @to_create_block,
+        :to_create   => to_create,
         :build_class => build_class,
         :proxy_class => proxy_class
       }
@@ -107,13 +97,9 @@ module FactoryGirl
       [name] + @aliases
     end
 
-    def to_create(&block)
-      @to_create_block = block
-    end
-
     def compile
       parent.compile if parent
-      @attribute_list.ensure_compiled
+      attribute_list.ensure_compiled
     end
 
     protected
@@ -124,18 +110,18 @@ module FactoryGirl
 
     def attributes
       compile
-      build_attribute_list.tap do |list|
+      AttributeList.new(@name).tap do |list|
         traits.each do |trait|
           list.apply_attribute_list(trait.attributes)
         end
 
-        list.apply_attribute_list(@attribute_list)
+        list.apply_attribute_list(attribute_list)
         list.apply_attribute_list(parent.attributes) if parent
       end
     end
 
     def callbacks
-      [@callbacks].tap do |result|
+      [@definition.callbacks].tap do |result|
         result.unshift(*parent.callbacks) if parent
       end.flatten
     end
@@ -157,7 +143,7 @@ module FactoryGirl
     end
 
     def trait_for(name)
-      @defined_traits.detect {|trait| trait.name == name }
+      @definition.defined_traits.detect {|trait| trait.name == name }
     end
 
     def parent
@@ -165,8 +151,8 @@ module FactoryGirl
       FactoryGirl.factory_by_name(@parent)
     end
 
-    def build_attribute_list
-      AttributeList.new(@name)
+    def attribute_list
+      @definition.attribute_list
     end
 
     class Runner
