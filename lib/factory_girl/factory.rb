@@ -18,7 +18,7 @@ module FactoryGirl
       @callbacks = []
     end
 
-    delegate :overridable?, :declare_attribute, :to => :@attribute_list
+    delegate :declare_attribute, :to => :@attribute_list
 
     def factory_name
       $stderr.puts "DEPRECATION WARNING: factory.factory_name is deprecated; use factory.name instead."
@@ -112,7 +112,7 @@ module FactoryGirl
     end
 
     def compile
-      inherit_factory(parent) if parent
+      parent.compile if parent
       @attribute_list.ensure_compiled
     end
 
@@ -141,11 +141,6 @@ module FactoryGirl
     end
 
     private
-
-    def inherit_factory(parent) #:nodoc:
-      parent.compile
-      allow_overrides if parent.overridable?
-    end
 
     def assert_valid_options(options)
       options.assert_valid_keys(:class, :parent, :default_strategy, :aliases, :traits)

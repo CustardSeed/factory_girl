@@ -52,10 +52,6 @@ module FactoryGirl
       @overridable = true
     end
 
-    def overridable?
-      @overridable
-    end
-
     private
 
     def compile
@@ -115,6 +111,10 @@ module FactoryGirl
           attributes.delete_if {|attrib| attrib.name == attribute_name }
         end
       end
+    end
+
+    def overridable?
+      @overridable
     end
   end
 end
