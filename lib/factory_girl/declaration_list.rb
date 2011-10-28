@@ -5,7 +5,7 @@ module FactoryGirl
     end
 
     def to_attributes
-      @definitions.inject([]) {|result, definition| result += definition.to_attributes; result }
+      @definitions.inject([]) {|result, definition| result += definition.to_attributes }
     end
 
     def method_missing(name, *args, &block)
