@@ -26,5 +26,15 @@ module FactoryGirl
     def define_trait(trait)
       @defined_traits << trait
     end
+
+    def trait_by_name(name)
+      trait_for(name) || FactoryGirl.trait_by_name(name)
+    end
+
+    private
+
+    def trait_for(name)
+      defined_traits.detect {|trait| trait.name == name }
+    end
   end
 end

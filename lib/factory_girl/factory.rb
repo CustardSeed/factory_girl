@@ -3,7 +3,7 @@ require "active_support/inflector"
 
 module FactoryGirl
   class Factory
-    attr_reader :name #:nodoc:
+    attr_reader :name, :definition #:nodoc:
 
     def initialize(name, options = {}) #:nodoc:
       assert_valid_options(options)
@@ -16,7 +16,8 @@ module FactoryGirl
       @definition       = Definition.new(@name)
     end
 
-    delegate :add_callback, :declare_attribute, :to_create, :define_trait, :to => :@definition
+    delegate :add_callback, :declare_attribute, :to_create, :define_trait,
+             :defined_traits, :trait_by_name, :to => :@definition
 
     def factory_name
       $stderr.puts "DEPRECATION WARNING: factory.factory_name is deprecated; use factory.name instead."
@@ -58,16 +59,6 @@ module FactoryGirl
       attributes.select {|attribute| attribute.association? }
     end
 
-    def trait_by_name(name)
-      if existing_attribute = trait_for(name)
-        existing_attribute
-      elsif parent
-        parent.trait_by_name(name)
-      else
-        FactoryGirl.trait_by_name(name)
-      end
-    end
-
     # Names for this factory, including aliases.
     #
     # Example:
@@ -98,7 +89,10 @@ module FactoryGirl
     end
 
     def compile
-      parent.compile if parent
+      if parent
+        parent.defined_traits.each {|trait| define_trait(trait) }
+        parent.compile
+      end
       attribute_list.ensure_compiled
     end
 
@@ -140,10 +134,6 @@ module FactoryGirl
 
     def traits
       @traits.reverse.map { |name| trait_by_name(name) }
-    end
-
-    def trait_for(name)
-      @definition.defined_traits.detect {|trait| trait.name == name }
     end
 
     def parent

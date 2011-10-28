@@ -46,3 +46,22 @@ describe FactoryGirl::Definition, "#to_create" do
     subject.to_create.should == block
   end
 end
+
+describe FactoryGirl::Definition, "#trait_by_name" do
+  let(:female_trait) { stub("female trait", :name => :female) }
+  let(:admin_trait)  { stub("admin trait", :name => :admin) }
+
+  before do
+    subject.define_trait(female_trait)
+  end
+
+  it "finds the correct trait if defined on the definition" do
+    subject.trait_by_name(:female).should == female_trait
+  end
+
+  it "looks for the trait on FactoryGirl" do
+    FactoryGirl.stubs(:trait_by_name => admin_trait)
+    subject.trait_by_name(:admin).should == admin_trait
+    FactoryGirl.should have_received(:trait_by_name).with(:admin)
+  end
+end
