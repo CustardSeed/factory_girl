@@ -111,7 +111,7 @@ module FactoryGirl
       @to_create_block = block
     end
 
-    def ensure_compiled
+    def compile
       inherit_factory(parent) if parent
       @attribute_list.ensure_compiled
     end
@@ -123,9 +123,9 @@ module FactoryGirl
     end
 
     def attributes
-      ensure_compiled
+      compile
       build_attribute_list.tap do |list|
-        @traits.reverse.map { |name| trait_by_name(name) }.each do |trait|
+        traits.each do |trait|
           list.apply_attribute_list(trait.attributes)
         end
 
@@ -143,7 +143,7 @@ module FactoryGirl
     private
 
     def inherit_factory(parent) #:nodoc:
-      parent.ensure_compiled
+      parent.compile
       allow_overrides if parent.overridable?
     end
 
@@ -155,6 +155,10 @@ module FactoryGirl
         $stderr.puts "DEPRECATION WARNING: default_strategy is deprecated."
         $stderr.puts "Override to_create if you need to prevent a call to #save!."
       end
+    end
+
+    def traits
+      @traits.reverse.map { |name| trait_by_name(name) }
     end
 
     def trait_for(name)
