@@ -56,10 +56,6 @@ module FactoryGirl
       @overridable
     end
 
-    def size
-      to_a.size
-    end
-
     private
 
     def compile
