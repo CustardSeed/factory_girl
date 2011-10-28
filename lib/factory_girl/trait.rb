@@ -15,10 +15,7 @@ module FactoryGirl
 
     def attributes
       AttributeList.new.tap do |list|
-        @attribute_list.declarations.to_attributes.each do |attribute|
-          list.define_attribute(attribute)
-        end
-        list.apply_attributes @attribute_list
+        list.apply_attributes(@attribute_list)
       end
     end
 

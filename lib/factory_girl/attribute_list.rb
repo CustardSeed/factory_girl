@@ -2,7 +2,7 @@ module FactoryGirl
   class AttributeList
     include Enumerable
 
-    attr_reader :callbacks, :declarations
+    attr_reader :callbacks
 
     def initialize(name = nil)
       @name         = name
@@ -10,6 +10,7 @@ module FactoryGirl
       @declarations = DeclarationList.new
       @callbacks    = []
       @overridable  = false
+      @compiled     = false
     end
 
     def declare_attribute(declaration)
@@ -32,7 +33,12 @@ module FactoryGirl
       flattened_attributes.each(&block)
     end
 
+    def ensure_compiled
+      compile unless @compiled
+    end
+
     def apply_attributes(attributes_to_apply)
+      attributes_to_apply.ensure_compiled
       attributes_to_apply.callbacks.reverse.each { |callback| prepend_callback(callback) }
       new_attributes = []
 
@@ -51,6 +57,7 @@ module FactoryGirl
     end
 
     def overridable
+      @compiled = false
       @overridable = true
     end
 
@@ -63,6 +70,13 @@ module FactoryGirl
     end
 
     private
+
+    def compile
+      @declarations.to_attributes.each do |attribute|
+        define_attribute(attribute)
+      end
+      @compiled = true
+    end
 
     def add_attribute(attribute)
       delete_attribute(attribute.name) if overridable?

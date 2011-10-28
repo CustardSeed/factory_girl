@@ -15,10 +15,9 @@ module FactoryGirl
       @default_strategy = options[:default_strategy]
       @defined_traits   = []
       @attribute_list   = build_attribute_list
-      @compiled         = false
     end
 
-    delegate :overridable?, :declarations, :declare_attribute, :define_attribute, :add_callback, :to => :@attribute_list
+    delegate :overridable?, :declare_attribute, :add_callback, :to => :@attribute_list
 
     def factory_name
       $stderr.puts "DEPRECATION WARNING: factory.factory_name is deprecated; use factory.name instead."
@@ -34,7 +33,6 @@ module FactoryGirl
     end
 
     def allow_overrides
-      @compiled = false
       @attribute_list.overridable
       self
     end
@@ -111,7 +109,8 @@ module FactoryGirl
     end
 
     def ensure_compiled
-      compile unless @compiled
+      inherit_factory(parent) if parent
+      @attribute_list.ensure_compiled
     end
 
     protected
@@ -136,16 +135,6 @@ module FactoryGirl
 
     def callbacks
       attributes.callbacks
-    end
-
-    def compile
-      inherit_factory(parent) if parent
-
-      declarations.to_attributes.each do |attribute|
-        define_attribute(attribute)
-      end
-
-      @compiled = true
     end
 
     def inherit_factory(parent) #:nodoc:
