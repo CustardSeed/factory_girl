@@ -7,7 +7,7 @@ module FactoryGirl
     def initialize(name = nil)
       @name         = name
       @attributes   = {}
-      @declarations = []
+      @declarations = DeclarationList.new
       @callbacks    = []
       @overridable  = false
     end
@@ -18,11 +18,9 @@ module FactoryGirl
     end
 
     def define_attribute(attribute)
-      if attribute.respond_to?(:factory) && attribute.factory == @name
-        raise AssociationDefinitionError, "Self-referencing association '#{attribute.name}' in '#{attribute.factory}'"
-      end
-
+      ensure_attribute_not_self_referencing! attribute
       ensure_attribute_not_defined! attribute
+
       add_attribute attribute
     end
 
@@ -95,6 +93,12 @@ module FactoryGirl
     def ensure_attribute_not_defined!(attribute)
       if !overridable? && attribute_defined?(attribute.name)
         raise AttributeDefinitionError, "Attribute already defined: #{attribute.name}"
+      end
+    end
+
+    def ensure_attribute_not_self_referencing!(attribute)
+      if attribute.respond_to?(:factory) && attribute.factory == @name
+        raise AssociationDefinitionError, "Self-referencing association '#{attribute.name}' in '#{attribute.factory}'"
       end
     end
 

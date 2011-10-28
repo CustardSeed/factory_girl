@@ -1,5 +1,4 @@
 require "active_support/core_ext/hash/keys"
-require "active_support/core_ext/module/delegation"
 require "active_support/inflector"
 
 module FactoryGirl
@@ -142,10 +141,8 @@ module FactoryGirl
     def compile
       inherit_factory(parent) if parent
 
-      declarations.each do |declaration|
-        declaration.to_attributes.each do |attribute|
-          define_attribute(attribute)
-        end
+      declarations.to_attributes.each do |attribute|
+        define_attribute(attribute)
       end
 
       @compiled = true

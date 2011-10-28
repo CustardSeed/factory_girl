@@ -11,21 +11,12 @@ module FactoryGirl
       proxy.instance_eval(&@block) if block_given?
     end
 
-    def declare_attribute(declaration)
-      @attribute_list.declare_attribute(declaration)
-      declaration
-    end
-
-    def add_callback(name, &block)
-      @attribute_list.add_callback(Callback.new(name, block))
-    end
+    delegate :declare_attribute, :add_callback, :to => :@attribute_list
 
     def attributes
       AttributeList.new.tap do |list|
-        @attribute_list.declarations.each do |declaration|
-          declaration.to_attributes.each do |attribute|
-            list.define_attribute(attribute)
-          end
+        @attribute_list.declarations.to_attributes.each do |attribute|
+          list.define_attribute(attribute)
         end
         list.apply_attributes @attribute_list
       end
