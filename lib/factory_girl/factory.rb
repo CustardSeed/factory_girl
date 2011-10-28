@@ -42,8 +42,6 @@ module FactoryGirl
     end
 
     def run(proxy_class, overrides, &block) #:nodoc:
-      ensure_compiled
-
       runner_options = {
         :attributes  => attributes,
         :callbacks   => callbacks,
