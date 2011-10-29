@@ -11,7 +11,8 @@ module FactoryGirl
       proxy.instance_eval(&@block) if block_given?
     end
 
-    delegate :add_callback, :declare_attribute, :to_create, :define_trait, :to => :@definition
+    delegate :add_callback, :declare_attribute, :to_create, :define_trait,
+             :callbacks, :to => :@definition
 
     def attributes
       attribute_list.ensure_compiled

@@ -115,7 +115,7 @@ module FactoryGirl
     end
 
     def callbacks
-      [@definition.callbacks].tap do |result|
+      [traits.map(&:callbacks), @definition.callbacks].tap do |result|
         result.unshift(*parent.callbacks) if parent
       end.flatten
     end
